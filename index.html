@@ -1,0 +1,781 @@
+<title>The Cooking Skill: 1–99</title>
+<style>
+  :root{
+    --stone:#17120d;
+    --stone-2:#1f1811;
+    --panel:#251d13;
+    --panel-edge:#3a2f1e;
+    --parchment:#e9dcc2;
+    --ash:#a0917a;
+    --ash-dim:#6f6350;
+    --gold:#edb64a;
+    --gold-dim:#8a6a2c;
+    --verdant:#8cbf6d;
+    --ember:#d0693f;
+    --trim:#7ec7d8;
+    --band-w:64px;
+  }
+  html{background:var(--stone);}
+  body{
+    background:
+      radial-gradient(1200px 500px at 50% -100px, #2b2114 0%, transparent 70%),
+      var(--stone);
+    color:var(--parchment);
+    font-family:"Avenir Next","Avenir","Segoe UI",system-ui,sans-serif;
+    line-height:1.55;
+    margin:0;
+    padding-bottom:96px;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px;}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums;}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:linear-gradient(#1c1610f2,#1c1610e8);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--panel-edge);
+  }
+  .hud{display:flex;align-items:center;gap:16px;padding:12px 20px;max-width:900px;margin:0 auto;}
+  .lvl-badge{
+    flex:none;width:64px;height:64px;
+    background:linear-gradient(160deg,#3d311c,#241c10);
+    border:2px solid var(--gold-dim);
+    border-radius:8px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    box-shadow:inset 0 1px 0 #ffffff14, 0 2px 8px #0008;
+  }
+  .lvl-badge.capeT{border-color:var(--trim);box-shadow:inset 0 1px 0 #ffffff14, 0 0 14px #7ec7d855;}
+  .lvl-badge .num{font-size:26px;font-weight:700;color:var(--gold);line-height:1;}
+  .lvl-badge .cap{font-size:10px;letter-spacing:.14em;color:var(--ash);text-transform:uppercase;margin-top:3px;}
+  .hud-mid{flex:1;min-width:0;}
+  .hud-title{font-family:"Luminari","Palatino",serif;font-size:20px;color:var(--parchment);letter-spacing:.02em;}
+  .xpbar{height:12px;background:#0d0a06;border:1px solid var(--panel-edge);border-radius:6px;overflow:hidden;margin-top:6px;}
+  .xpbar>div{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));width:0%;transition:width .4s ease;}
+  .xpline{font-size:11.5px;color:var(--ash);margin-top:4px;}
+  .xpline b{color:var(--gold);font-weight:600;}
+  #resetBtn{
+    flex:none;background:none;border:1px solid var(--panel-edge);color:var(--ash);
+    font:inherit;font-size:12px;padding:6px 12px;border-radius:6px;cursor:pointer;
+  }
+  #resetBtn:hover{color:var(--parchment);border-color:var(--ash-dim);}
+  #resetBtn:focus-visible,.item:focus-visible,.pro-item:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+
+  /* ---------- intro ---------- */
+  .hero{padding:52px 0 8px;}
+  h1{
+    font-family:"Luminari","Palatino",serif;font-weight:400;
+    font-size:clamp(34px,6vw,54px);line-height:1.08;margin:0 0 14px;
+    color:var(--gold);text-wrap:balance;text-shadow:0 2px 12px #edb64a26;
+  }
+  .vtag{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ash);margin-bottom:10px;}
+  .hero p.lede{font-size:17px;max-width:62ch;color:var(--parchment);}
+  .hero p, .note p{color:#cdbfa4;max-width:70ch;}
+  .note{
+    background:var(--panel);border:1px solid var(--panel-edge);border-left:3px solid var(--gold-dim);
+    border-radius:8px;padding:16px 20px;margin:22px 0;font-size:14.5px;
+  }
+  .note b{color:var(--parchment);}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin:26px 0 8px;font-size:13px;color:var(--ash);}
+  .legend span{display:flex;align-items:center;gap:8px;}
+  .swatch{width:12px;height:12px;border-radius:3px;flex:none;}
+
+  /* ---------- stats panel ---------- */
+  .stats{
+    background:var(--panel);border:1px solid var(--panel-edge);border-radius:10px;
+    padding:16px 20px;margin:26px 0;
+  }
+  .stats-head{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+  .stats-head::after{content:"";flex:1;height:1px;background:var(--panel-edge);}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .stat{
+    background:#1d160e;border:1px solid var(--panel-edge);border-radius:7px;
+    padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  }
+  .stat .sname{font-size:12.5px;color:#c9bb9f;}
+  .stat .slvl{font-size:14px;color:var(--gold);font-weight:700;}
+  .stat .slvl small{color:var(--ash-dim);font-weight:400;font-size:11px;}
+  .stat.maxed{border-color:#4a6b3a;}
+  .stat.maxed .slvl{color:var(--verdant);}
+  @media (max-width:640px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+
+  /* ---------- tiers ---------- */
+  .tier{display:grid;grid-template-columns:var(--band-w) 1fr;gap:0 18px;margin:34px 0;}
+  .band{text-align:center;padding-top:4px;}
+  .band .range{font-size:15px;font-weight:700;color:var(--gold);}
+  .band .rangecap{font-size:9.5px;letter-spacing:.16em;color:var(--ash-dim);text-transform:uppercase;}
+  .band .rail{width:2px;background:linear-gradient(var(--gold-dim),transparent);margin:10px auto 0;height:calc(100% - 46px);border-radius:2px;}
+  .tier-body{
+    background:var(--panel);border:1px solid var(--panel-edge);border-radius:10px;
+    padding:22px 24px 18px;box-shadow:0 2px 10px #0006;min-width:0;
+  }
+  .tier.done .tier-body{border-color:#4a6b3a;}
+  .tier.done .band .range{color:var(--verdant);}
+  .tier-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+  .tier-name{
+    font-family:"Palatino","Iowan Old Style",serif;font-size:24px;color:var(--parchment);
+    margin:0;font-weight:600;letter-spacing:.01em;text-wrap:balance;
+  }
+  .tier-sub{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);}
+  .tier-progress{margin-left:auto;font-size:12.5px;color:var(--ash);}
+  .tier-intro{font-size:14.5px;color:#c9bb9f;max-width:66ch;margin:10px 0 4px;}
+
+  .grp{margin-top:16px;}
+  .grp-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .grp-label::after{content:"";flex:1;height:1px;background:var(--panel-edge);}
+
+  .item{
+    display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start;
+    padding:8px 10px;margin:0 -10px;border-radius:7px;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .item:hover{background:#ffffff08;}
+  .box{
+    width:18px;height:18px;margin-top:2px;flex:none;
+    border:1.5px solid var(--ash-dim);border-radius:4px;background:#0d0a06;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .15s,border-color .15s;
+  }
+  .box svg{width:12px;height:12px;opacity:0;transform:scale(.6);transition:opacity .15s,transform .15s;}
+  .item.checked .box{background:var(--verdant);border-color:var(--verdant);}
+  .item.partial .box{border-color:var(--gold);}
+  .item.checked .box svg{opacity:1;transform:scale(1);}
+  .item .txt{font-size:14.5px;color:var(--parchment);}
+  .item .txt small{display:block;color:var(--ash);font-size:13px;margin-top:1px;}
+  .item.checked .txt{color:var(--ash);}
+  .item .meta{text-align:right;margin-top:2px;}
+  .item .xp{font-size:11.5px;color:var(--gold-dim);white-space:nowrap;display:block;}
+  .item.checked .xp{color:var(--verdant);}
+  .pips{display:inline-flex;gap:3px;margin-top:4px;}
+  .pip{width:8px;height:8px;border-radius:50%;border:1px solid var(--ash-dim);background:transparent;}
+  .pip.on{background:var(--gold);border-color:var(--gold);}
+  .item.checked .pip.on{background:var(--verdant);border-color:var(--verdant);}
+  .dchip{
+    display:inline-block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ash-dim);border:1px solid var(--panel-edge);border-radius:3px;
+    padding:0 5px;margin-left:8px;vertical-align:1px;
+  }
+
+  .boss .item{border:1px solid #5a3423;background:#2b1c12;margin:0;border-radius:8px;padding:12px 14px;}
+  .boss .item:hover{background:#33220f;}
+  .bosstag{
+    display:inline-block;font-size:10px;letter-spacing:.18em;color:var(--ember);
+    border:1px solid #5a3423;padding:2px 8px;border-radius:4px;margin-bottom:6px;text-transform:uppercase;
+  }
+  .boss .txt b{color:#e8a37e;font-size:15px;}
+
+  .tier.elite .tier-body{border-color:#2e5560;background:#20211c;}
+  .tier.elite .band .range{color:var(--trim);}
+  .tier.elite .band .rail{background:linear-gradient(#2e5560,transparent);}
+  .tier.elite .tier-sub{color:var(--trim);}
+  .tier.elite .item.checked .box{background:var(--trim);border-color:var(--trim);}
+  .tier.elite.done .tier-body{border-color:#4a6b3a;}
+  .tier.elite.done .band .range{color:var(--verdant);}
+
+  .library{margin-top:14px;font-size:13px;color:var(--ash);border-top:1px solid var(--panel-edge);padding-top:12px;}
+  .library b{color:#c9bb9f;font-weight:600;letter-spacing:.12em;font-size:10.5px;text-transform:uppercase;margin-right:8px;}
+  .library i{color:#bfae8f;font-style:italic;}
+
+  /* ---------- rubric & side quests ---------- */
+  details.foldout{
+    background:var(--panel);border:1px solid var(--panel-edge);border-radius:10px;
+    margin:26px 0;overflow:hidden;
+  }
+  details.foldout summary{
+    cursor:pointer;padding:14px 20px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);
+    list-style:none;
+  }
+  details.foldout summary::-webkit-details-marker{display:none;}
+  details.foldout summary::before{content:"▸ ";color:var(--ash-dim);}
+  details.foldout[open] summary::before{content:"▾ ";}
+  details.foldout .inner{padding:0 20px 18px;font-size:14px;color:#cdbfa4;}
+  details.foldout table{border-collapse:collapse;margin:10px 0;font-size:13px;}
+  details.foldout td,details.foldout th{border:1px solid var(--panel-edge);padding:5px 12px;text-align:left;color:#cdbfa4;}
+  details.foldout th{color:var(--parchment);font-weight:600;}
+  .sq{display:grid;grid-template-columns:1fr;gap:6px;margin-top:6px;}
+  .sq div{padding:6px 0;border-bottom:1px solid #2a2216;font-size:13.5px;}
+  .sq b{color:var(--parchment);}
+
+  /* ---------- toast ---------- */
+  #toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(80px);
+    background:#2b2114;border:1.5px solid var(--gold);color:var(--gold);
+    padding:12px 22px;border-radius:8px;font-size:14.5px;z-index:99;
+    box-shadow:0 6px 24px #000c;opacity:0;transition:transform .35s ease,opacity .35s ease;
+    text-align:center;max-width:88vw;
+  }
+  #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+  @media (max-width:600px){
+    .tier{grid-template-columns:1fr;}
+    .band{display:flex;align-items:baseline;gap:8px;padding:0 0 8px;text-align:left;}
+    .band .rail{display:none;}
+    .hud-title{display:none;}
+  }
+  footer{margin-top:64px;font-size:12.5px;color:var(--ash-dim);border-top:1px solid var(--panel-edge);padding-top:18px;}
+  footer p{max-width:72ch;}
+</style>
+
+<header>
+  <div class="hud">
+    <div class="lvl-badge" id="badge" aria-live="polite"><div class="num" id="hudLvl">1</div><div class="cap" id="hudCap">Cooking</div></div>
+    <div class="hud-mid">
+      <div class="hud-title">The Cooking Skill</div>
+      <div class="xpbar" role="progressbar" aria-label="XP toward next level"><div id="xpFill"></div></div>
+      <div class="xpline mono" id="xpLine">0 xp</div>
+    </div>
+    <button id="resetBtn" type="button">Reset progress</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="vtag">Version 4 · the level 120 update · merged from three independent AI curricula (Fable, Codex, Grok) + CIA / Le Cordon Bleu / Escoffier sequencing</div>
+    <h1>The Cooking Skill: 1–99 at home, 100–120 in the wild</h1>
+    <p class="lede">Culinary school restructured as a RuneScape skill. Fifteen tiers from never-boiled-an-egg to leading a kitchen worth a special journey — each unlocks techniques, sets quests with pass conditions, and ends with a boss that gates the next tier.</p>
+    <div class="note">
+      <p><b>The game engine.</b> XP runs on the actual RuneScape curve, tuned so finishing a tier lands you exactly at the top of its level band. Skills are worth 1×, quests 3×, bosses 6×. <b>Drills require reps:</b> a quest with pips (● ● ○) must be landed on separate days — click to log each rep; a skill is mastered on the third success, not the first. Eight sub-disciplines level independently in the stats panel below. Progress saves in this browser.</p>
+      <p><b>The cape and the true cap.</b> Level 99 (13,034,431 xp) earns the <b>skillcape</b>: complete home mastery, the honest ceiling of self-teaching. But the real cap is <b>120</b> (104,273,167 xp — yes, the curve keeps going, and yes, 100–120 costs seven times more than 1–99; you knew this). The blue elite tiers cannot be earned in your own kitchen: they are stages, counted services, the brigade, and finally a menu held at standard for 150 services. Michelin stars go to restaurants, not people — levels 100–120 are the road to the place where stars actually live, built on the Guide's five criteria: product, technique, harmony, personality, consistency. Level 120 is the <b>master cape</b>.</p>
+      <p><b>Pace.</b> Cooking most days: Tiers 1–5 ≈ year one, 6–9 ≈ years two and three, 10–12 an endgame measured in years — and 100–120 is a career, not a hobby. Reality checks, not speed limits.</p>
+    </div>
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--gold)"></span>Skill unlock</span>
+      <span><span class="swatch" style="background:var(--verdant)"></span>Quest — reps on separate days</span>
+      <span><span class="swatch" style="background:var(--ember)"></span>Boss — gate dish</span>
+      <span><span class="swatch" style="background:var(--trim)"></span>Elite tiers 100–120 — professional kitchens only</span>
+    </div>
+
+    <div class="stats">
+      <div class="stats-head">Stats</div>
+      <div class="stats-grid" id="statsGrid"></div>
+    </div>
+
+    <details class="foldout">
+      <summary>Boss exam rubric — how to grade a boss fight</summary>
+      <div class="inner">
+        <p>Score every boss 0–4 in each category. <b>Pass = no zeroes, Safety at 4, average ≥ 3.</b> Recruit an honest taster to score with you — self-graded exams inflate.</p>
+        <table>
+          <tr><th>Score</th><th>Meaning</th></tr>
+          <tr><td class="mono">0</td><td>Unsafe, absent, or fundamentally failed</td></tr>
+          <tr><td class="mono">1</td><td>Works only with heavy help; inconsistent</td></tr>
+          <tr><td class="mono">2</td><td>Competent in easy conditions; defects remain</td></tr>
+          <tr><td class="mono">3</td><td>Professional, repeatable, well judged</td></tr>
+          <tr><td class="mono">4</td><td>Exceptional control; can diagnose and teach it</td></tr>
+        </table>
+        <p>Categories: safety · organization · product judgment · technique · seasoning &amp; flavor · texture &amp; temperature · timing · presentation · waste &amp; cost · reflection.</p>
+        <p>Log every serious cook: goal, quantities, temperatures, timeline vs plan, tasting notes, waste, one variable to change next time. The journal is where XP actually accrues; the checkboxes just record it.</p>
+      </div>
+    </details>
+
+    <details class="foldout">
+      <summary>Permanent side quests — run alongside every tier</summary>
+      <div class="inner">
+        <div class="sq">
+          <div><b>Palate</b> — weekly blind tasting: an ingredient, a seasoning level, a doneness, or a defect.</div>
+          <div><b>Journal</b> — record every serious cook; review the month's patterns on the 1st.</div>
+          <div><b>Market</b> — visit a grower, fisher, butcher, or producer monthly; buy something you can't name.</div>
+          <div><b>Dining</b> — regularly eat food made by cooks better than you and deconstruct it in writing.</div>
+          <div><b>Teaching</b> — explain one mastered skill to someone else each month; gaps surface when you teach.</div>
+          <div><b>Fitness</b> — sleep, mobility, footwear, stress. Tier 11+ is physical; train for it like one.</div>
+          <div><b>Ethics</b> — track waste, sourcing claims, and labor realities behind what you buy.</div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <main id="tiers"></main>
+
+  <footer>
+    <p><b>Version 4 merge notes.</b> Backbone and XP engine from the Fable curriculum; exam design (blind stock identification, surprise-basket sauces, the 45-minute egg exam, the family-table boss, rep-based mastery, the 0–4 rubric, the counted-services ladder that now powers the elite tiers) from the Codex "Cooking Skillcape"; vegetable &amp; starch craft tier and flavor-engine gates from the Grok skill tree. Sequencing cross-checked against Le Cordon Bleu Basic→Superior, the CIA Professional Chef progression, and Michelin's published five criteria. Levels 100–120 use the same XP formula continued past the cape — the master cape costs exactly what RuneScape says it should.</p>
+    <p>Flavor-lab quests use the Epicure pairing model (epicure-mcp.kaikaku.ai): seed an ingredient, cook from its bridge pairings. Progress is stored only in this browser. The pass conditions are the real examiner.</p>
+  </footer>
+</div>
+
+<div id="toast" aria-live="polite"></div>
+
+<script>
+// ---------- disciplines ----------
+const DISC={K:"Knife",H:"Heat",S:"Sauces",P:"Produce",B:"Baking",M:"Butchery",T:"Palate",V:"Service"};
+
+// ---------- curriculum data ----------
+// s: [title, detail, disc]  q: [title, detail, disc, reps]  boss: [title, detail]
+const TIERS=[
+{
+ name:"Tutorial Island", sub:"Safety, kit & first flames", band:[1,8],
+ intro:"Before technique: safety you can explain, a thermometer you trust, and the taste–adjust feedback loop every later tier runs on. Nothing here needs equipment beyond the starter kit — skill unlocks gear, not the other way around.",
+ s:[
+  ["Assemble the starter kit","Chef's knife, paring knife, big board, digital scale, probe thermometer, timer, stainless + cast-iron pan, sheet pan, Dutch oven, fine strainer. Nothing else yet.","V"],
+  ["Food safety fundamentals","Cross-contamination, allergens, handwashing rhythm, cooling/reheating rules, the 4–60°C danger zone — from an accredited source, not a blog. Reorganize the fridge raw-below-cooked.","V"],
+  ["Knife grip and the claw","Pinch grip on the blade, guiding hand curled, damp towel under the board. Slow is fine; bleeding is not.","K"],
+  ["Calibrate your instruments","Ice-water check the thermometer; weigh everything for a month. Cups lie, scales don't.","H"],
+  ["Read the recipe twice, then mise","Full read before flame; every ingredient staged. Convert one recipe into a timed prep list — this habit alone beats most home cooks.","V"],
+  ["Palate baseline","Taste kosher vs table salt, three acids, four fats side by side in safe dilutions. Start a journal: you'll need the before picture.","T"],
+  ["Learn your stove","Boil water in each pan; find where 'medium' actually lives. Water-droplet test on stainless.","H"],
+  ["Oil & pan-fire protocol","Smoke points, why water and burning oil are enemies, lid-and-kill drill. Learn it before you ever deep-fry.","H"],
+ ],
+ q:[
+  ["Eggs five ways","Boiled 6/8/10 min side-by-side, slow scramble, crisp-edge fry. Pass: name the doneness before cutting in.","H",3],
+  ["Rice by absorption","No cooker. Pass: distinct grains, no burnt bottom, no glue — recorded ratio, repeated without guessing.","P",3],
+  ["Pasta al dente","Water like the sea. Pass: you catch al dente by bite, not box timer, and finish the pasta IN its sauce.","P",3],
+  ["Vinaigrette by ratio","3:1 oil to acid + mustard + salt, no recipe. Pass: you correct it by taste alone.","S",3],
+  ["The French omelet","Soft, pale, rolled. Budget a dozen eggs — it's the classic audition dish for a reason.","H",3],
+ ],
+ boss:["The first dinner","Roast chicken thighs + rice + dressed salad, everything landing hot at once, nothing needing salt at the table — and the kitchen restored within 30 minutes of serving. Heat control + timing + taste, graded on the rubric."],
+ books:"Samin Nosrat, <i>Salt Fat Acid Heat</i> (start now); a food-safety manual recognized where you live."
+},
+{
+ name:"Kitchen Discipline", sub:"Knife & mise en place", band:[9,16],
+ intro:"Culinary schools spend their first weeks here because knife work and mise en place are the rate-limiters on everything else. The onion is the gym: cheap, daily, unforgiving.",
+ s:[
+  ["The classic cuts","Slice, dice large/medium/small, julienne, brunoise (3mm — measure it), chiffonade, mince. Dimensions are the point.","K"],
+  ["Onion, three ways","Dice, with the grain, against the grain. Learn what each does to flavor and texture.","K"],
+  ["Sharpen and hone","Hone every session; learn the whetstone. The dull knife is the dangerous one.","K"],
+  ["Salt in layers + the seasoning loop","Kosher salt from height; season as you go. Internalize: salt → taste → acid → fat → heat.","T"],
+  ["The fond","Preheat properly, don't crowd, let food release itself. Break the crowding rule once on purpose to see why it exists.","H"],
+  ["Know twenty vegetables","Identify, store, and prep 20 vegetables/herbs correctly — including the gritty (leeks) and the awkward (fennel, celeriac).","P"],
+  ["Station discipline","Garbage bowl, bench scraper, damp towel, clean-as-you-go, full close-down checklist. Cook like someone shares your kitchen.","V"],
+ ],
+ q:[
+  ["Onion dice under 90 seconds","Clean and even — film it and judge the uniformity honestly.","K",3],
+  ["The kilo drill","Cut 1 kg of mixed vegetables uniformly, then cook them three ways (roast, glaze, purée). Knife work becomes food, not confetti.","K",2],
+  ["Mise-en-place week","Seven straight days where nothing touches heat until everything is staged. Pass: zero mid-recipe scrambles.","V",1],
+  ["Caramelized onions, the real ones","45+ minutes to mahogany, no added sugar, no burning. A patience exam.","H",2],
+  ["Sear, don't steam","Dry-pan mushrooms and roasted vegetables with real color, five kinds. Moisture management is the skill.","P",3],
+ ],
+ boss:["The family table","For four people: salad or soup, a main with two sides and a sauce, and a simple dessert — everything within a ten-minute serving window, hot things hot, kitchen closed down in 30. The first true multi-front battle."],
+ books:"Finish <i>Salt Fat Acid Heat</i>; J. Kenji López-Alt, <i>The Food Lab</i> as the 'why' reference; Pépin's knife videos — free and canonical."
+},
+{
+ name:"Heat & Eggs", sub:"Every method, one ingredient", band:[17,24],
+ intro:"The named heat methods — dry, moist, fat — applied until they're reflexes, with the egg as the precision instrument. This tier also unlocks fire you've been warned about: the fryer and the grill.",
+ s:[
+  ["Dry heat family","Sauté, sear, roast, broil, grill: browning, Maillard, and what each does to the same chicken thigh.","H"],
+  ["Moist heat family","Poach (sub-simmer), simmer, steam. Gentleness as a technique, not a temperament.","H"],
+  ["Deep-fry, safely","Oil choice, temperature recovery, small batches, dry food, and the fire protocol from Tier 1. Crisp is chemistry, not courage.","H"],
+  ["Live fire, direct and indirect","Two-zone setup, flare-up management, resting over coals. Fire is a heat method, not a weekend personality.","H"],
+  ["The egg family","Fried, scrambled slow and fast, poached, soft/medium/hard boiled, baked. The cheapest doneness trainer that exists.","H"],
+  ["Blanch and shock","Salted rolling boil, ice bath. Vivid AND cooked is the pass.","P"],
+  ["Pull temps and carryover","Probe everything for a month. Chicken breast out at 68°C coasts to 74°C. Resting is cooking.","H"],
+ ],
+ q:[
+  ["Doneness by the degree","Protein to a target internal temp within ±2°C, called before the probe confirms. Steak, chicken, fish — rotate.","H",3],
+  ["Poached eggs, tight whites","No vortex tricks, no vinegar soup. Just gentle water and confidence.","H",3],
+  ["Fries or tempura","Double-fry or batter — oil held on temperature, food crisp not greasy.","H",2],
+  ["A two-zone grill session","Sear over direct, finish over indirect, rest properly. Flare-ups managed, nothing carbonized.","H",2],
+ ],
+ boss:["The 45-minute egg exam","On one clock: a French omelet, a poached egg, hand-whisked mayonnaise, and a properly seasoned cooked vegetable. Four fragile techniques, no hiding places — the classic culinary-school practical."],
+ books:"Ruhlman, <i>Ruhlman's Twenty</i>; McGee, <i>On Food and Cooking</i> (reference, forever)."
+},
+{
+ name:"Stocks & Extraction", sub:"Flavor's supply chain", band:[25,32],
+ intro:"Escoffier's kitchen ran on stock and so will yours. This tier is extraction: pulling flavor out of bones, shells, and vegetables, and learning to read what you pulled.",
+ s:[
+  ["White chicken stock","Bones, mirepoix, never boiled, skimmed like you mean it. Pass: it gels in the fridge.","S"],
+  ["Brown stock","Roast the bones and paste first. Learn what caramelization does to depth.","S"],
+  ["Fumet and dashi","Fish stock in 30 gentle minutes; dashi in 20 with two ingredients. Two philosophies of extraction — the French build, the Japanese select.","S"],
+  ["Vegetable stock + soup typology","Clear, puréed, cream, chowder, broth-based: know which architecture you're building before you start.","S"],
+  ["Skim, strain, cool, store","Fat off the top, chinois or damp-cloth strain, ice-bath cool, label and date. Stock safety is food safety.","S"],
+  ["Reduce to glaze","Take a liter down to syrup. Learn what body means without any starch in the room.","S"],
+  ["Aromatic bases of the world","Mirepoix, soffritto, holy trinity, sofrito, ginger-garlic-scallion. Same idea, different passports — the on-ramp to Tier 9.","S"],
+ ],
+ q:[
+  ["Stock day","4+ liters from saved carcasses, portioned and frozen. Repeat monthly forever.","S",3],
+  ["Puréed soup, silk","Potato-leek or butternut: properly sweated, fully blended, passed if needed. No grit, no gloop.","S",2],
+  ["A clear broth that tastes like the animal","Seasoned to drink alone. Clarity is patience made visible.","S",2],
+  ["Blind stock identification","Four unlabeled stocks — name them by taste. Then turn one into a finished soup on the spot.","T",1],
+ ],
+ boss:["French onion soup, all yours","Tier 2's caramelized onions + your brown stock + broiled gruyère raft. Every component is a previous lesson wearing a beret."],
+ books:"James Peterson, <i>Sauces</i> (the stock chapters first); CIA, <i>The Professional Chef</i> as the school backbone from here on."
+},
+{
+ name:"Saucier", sub:"Sauces & flavor design", band:[33,40],
+ intro:"The saucier was Escoffier's highest station. This tier is also where you stop following flavor and start designing it — the six levers, pairing theory, and the first exams with no recipe to hide behind.",
+ s:[
+  ["The roux ladder","White, blond, brown, brick — plus slurry and monter au beurre. Know when each is right.","S"],
+  ["The five mothers","Béchamel, velouté, espagnole, hollandaise, tomate. Every sauce you'll ever improvise is a descendant.","S"],
+  ["Emulsions and their rescue","Mayo, hollandaise, beurre blanc: what an emulsion is, why it breaks, how to bring each back from the dead.","S"],
+  ["The weeknight pan-sauce loop","Sear → fond → shallot → deglaze → reduce → butter. This loop upgrades every dinner for the rest of your life.","S"],
+  ["The six levers","Salt, fat, acid, sweet, bitter, umami. Diagnose a dull dish by naming which lever is low BEFORE reaching for salt.","T"],
+  ["Cold sauces","Pesto, salsa verde, chimichurri, compound butters, yogurt sauces. Half of saucing needs no flame.","S"],
+  ["Flavor pairing, systematically","Why pairings work: shared volatiles and cultural grammar. The Flavor Bible plus the Epicure pairing model are your lab instruments.","T"],
+ ],
+ q:[
+  ["Mother sauce week","All five in seven days, plus one derivative each: mornay, suprême, a demi-bound pan sauce, béarnaise, puttanesca.","S",1],
+  ["Break one, save one","Hand-whisk a mayonnaise, break it on purpose, rescue it. Emulsions move from your head to your wrist.","S",2],
+  ["Five pan sauces, five nights","Different protein and deglazing liquid each night, no recipes. Glossy, coats a spoon, seasoned.","S",3],
+  ["Epicure flavor lab","Seed the pairing model (epicure-mcp.kaikaku.ai) with an ingredient you love; build a dish on a bridge pairing you'd never have guessed. Miso → kombu, dashi, garland chrysanthemum is a soup begging to exist.","T",2],
+  ["Blind lever diagnosis","Someone sabotages a simple soup (over-acid, under-salt, flat). Name the broken lever by taste, blind.","T",3],
+  ["The surprise basket","Hand someone the shopping: one unseen vegetable or protein. Produce two suitable sauces — one warm, one cold — with written reasoning. No recipe exists; that's the exam.","S",1],
+ ],
+ boss:["Eggs Benedict, fully from scratch","Poached eggs + hand-whisked hollandaise that holds for 20 minutes + a toasted base. Three fragile techniques on one plate at brunch pace."],
+ books:"Page & Dornenburg, <i>The Flavor Bible</i>; Escoffier, <i>Le Guide Culinaire</i> as historical reference; the Epicure MCP as pairing search engine."
+},
+{
+ name:"Bread & Fermentation", sub:"Cooking with time", band:[41,48],
+ intro:"Bread starts here — earlier than most curricula put it — because its real ingredient is calendar time: starters, weekly bakes, dozens of loaves. Fermentation is the same lesson in a jar: managed time, wild biology, safety by measurement.",
+ s:[
+  ["Baker's percentages","Everything as a % of flour weight. 70% hydration means something to your hands now. Scale always.","B"],
+  ["Gluten and the windowpane","What kneading builds; stretch a dough thin enough to read through.","B"],
+  ["Fermentation by the dough, not the clock","Time × temperature = flavor. The poke test over the timer, always.","B"],
+  ["Sourdough starter care","Build one, feed it, know its peak. Name it something embarrassing; that's tradition.","B"],
+  ["Enriched doughs","Butter, eggs, sugar: challah, milk bread, brioche. A different gluten negotiation than lean dough.","B"],
+  ["Ferments I — safety by numbers","Sauerkraut, kimchi, lacto-pickles, hot sauce: salinity %, pH, time and temperature as the actual safety controls. Log everything; discard doubt without hesitation.","P"],
+ ],
+ q:[
+  ["Keep a starter alive one month","Daily-ish feeding, rhythm noted. Pass: doubles reliably within hours of feeding.","B",1],
+  ["Straight loaf, then focaccia","Sandwich loaf for structure, focaccia for hydration confidence and dimpled joy.","B",3],
+  ["An enriched bake","Challah or milk bread with even crumb and real butter flavor — no dry corners.","B",2],
+  ["Serve your own ferment","Something you made 3+ weeks ago, on a plate for guests, with its log to prove the process. Planning across weeks is the skill.","P",2],
+ ],
+ boss:["Sourdough boule with an ear","Natural leaven only: open crumb, blistered crust, and the scored ear that says you controlled fermentation instead of surviving it. Weeks of decent-but-flat loaves come first. That's the XP."],
+ books:"Ken Forkish, <i>Flour Water Salt Yeast</i>; Sandor Katz, <i>The Art of Fermentation</i>; Ruhlman, <i>Ratio</i>."
+},
+{
+ name:"Vegetable & Starch Craft", sub:"Sides become centerpieces", band:[49,56],
+ intro:"The tier most curricula skip — and the one modern three-star kitchens obsess over. Vegetables and starches as primary craft: starch chemistry, emulsion pastas, the potato in five voices, and a vegetable plate that outcompetes meat.",
+ s:[
+  ["The potato ladder","Mash without glue, roast with shattering edges, fondant, gratin dauphinois, proper fries. One tuber, five techniques.","P"],
+  ["Risotto: starch on command","Toast, feed, agitate, stop. Creamy without cream is a control exam, not a recipe.","P"],
+  ["Pasta-water emulsions","Cacio e pepe, aglio e olio, al limone: starch + fat + agitation = sauce from almost nothing.","P"],
+  ["Legumes, properly","Season from the start, simmer to creamy-not-blown. Dal and hummus as texture exams.","P"],
+  ["Purées at restaurant silk","Fully cooked, fully blended, passed. The butter ratio will alarm you; that's the point.","P"],
+  ["Glaze and confit vegetables","Glazed carrots with sheen not syrup; garlic or tomato confit in fat, low and slow.","P"],
+  ["Fresh pasta dough","Egg + flour, kneaded, rested, rolled translucent. A different gluten lesson than bread.","B"],
+ ],
+ q:[
+  ["Cacio e pepe that doesn't clump","Three cheeses' worth of failure is normal. Pass: glossy emulsion, three separate nights.","P",3],
+  ["Risotto without cream","Proper wave (all'onda), distinct grains, no glue.","P",3],
+  ["Gratin dauphinois","Even slices, fully tender center, bronzed top. The mandoline earns its danger pay.","P",2],
+  ["Fresh pasta night","Hand-rolled tagliatelle plus one filled shape, sauced with Tier 5 skills.","B",2],
+  ["A vegetable showpiece","Ratatouille (or its composed modern cousin) where every vegetable is cooked separately and correctly before they meet.","P",2],
+ ],
+ boss:["The vegetable main, blind","A vegetable-centered main course served blind alongside a competent meat option — at least three guests, majority must prefer the vegetable. Not a side promoted; a dish designed."],
+ books:"Judy Rodgers, <i>The Zuni Café Cookbook</i>; Joshua McFadden, <i>Six Seasons</i>."
+},
+{
+ name:"Butchery, Seafood & Garde Manger", sub:"Whole animals, cold kitchen", band:[57,64],
+ intro:"Buy whole, break down, use everything — cheaper, better, more honest. Plus the cold kitchen: curing, terrines, composed plates. Precision without heat heroics.",
+ s:[
+  ["Whole chicken: 8-cut + spatchcock","Follow the joints, keep the oysters, save every bone. At speed it becomes moving meditation.","M"],
+  ["Fish filleting, round and flat","Snapper and flounder; sharp flexible knife, confident strokes, bones to fumet.","M"],
+  ["Shellfish literacy","Clean and cook shrimp, mussels, squid, one whole crustacean. Freshness judgment is non-negotiable: eyes, gills, smell, shell.","M"],
+  ["Dry brining","Salt ahead: overnight for chicken, days for big roasts. The single biggest protein upgrade that exists.","M"],
+  ["Curing 101","Gravlax (salt + sugar + 48 hours) and a basic bacon. Preservation as flavor, safety by procedure.","M"],
+  ["Terrines & forcemeat intro","A rustic pâté or rillettes; grind, season, test-fry a spoonful before committing the batch.","M"],
+  ["Offal initiation","Liver first, then one of heart, sweetbreads, oxtail, tongue. Respect for the whole animal is a chef's tell.","M"],
+  ["Composed cold plates","Salads with architecture (fat/acid/crunch/salt), canapés, a cold soup. Everything prepped ahead — the garde manger discipline.","V"],
+ ],
+ q:[
+  ["The ten-chicken gauntlet","Break down ten over a few months; track time and yield. Both improve visibly or you're not paying attention.","M",3],
+  ["Crisp skin-on fish","Dry skin, hot pan, press flat, patience until release. A certification of its own.","M",3],
+  ["Gravlax, served to a skeptic","48-hour cure, sliced paper-thin on the bias.","M",2],
+  ["Whole fish, roasted and carved","Bought whole, judged fresh, roasted, portioned tableside without carnage.","M",2],
+  ["The offal dinner","Liver plus one more organ, cooked well enough that someone asks for seconds before asking what it is.","M",2],
+  ["Cold-course night","A composed cold appetizer spread, fully prepped ahead, zero à-la-minute panic.","V",1],
+ ],
+ boss:["One duck, three plates","Break down a whole duck: seared breast, confit legs, jus from the carcass. One animal, three techniques, nothing wasted — the tier's philosophy on a single menu."],
+ books:"Jacques Pépin, <i>La Technique</i>; Ruhlman & Polcyn, <i>Charcuterie</i>; The River Cottage <i>Meat</i> and <i>Fish</i> books."
+},
+{
+ name:"World Systems & The Table", sub:"Three cuisines deep, rooms full of people", band:[65,72],
+ intro:"Depth over tourism: three cuisines learned past the recipe level — pantry, grammar, canon — plus the separate skill of feeding rooms: menus, timelines, scaling. Every cuisine is someone's grandmother; study accordingly.",
+ s:[
+  ["Choose your three","One from home, one you love, one that scares you. Build each pantry completely — no substituting the fish sauce.","T"],
+  ["Spice work","Toast, bloom in fat (tadka), grind fresh, build pastes by pestle. Jarred ground coriander is a different ingredient than what you just made.","T"],
+  ["The flavor engine","State each cuisine's engine in one sentence (e.g. 'Thai: fish-sauce salt + lime acid + palm sugar + chili heat, balanced per bite'). If you can't, you're collecting recipes, not learning systems.","T"],
+  ["Dumplings & noodles","One wrapper folded properly (jiaozi, wonton, or tortellini) and one noodle discipline.","P"],
+  ["Menu composition","Progression, contrast, seasonality; rich follows acid; texture is a course-planning tool.","V"],
+  ["Scaling & the timeline","Cooking for 10 is not 2.5× cooking for 4. Prep-ahead architecture, oven Tetris, written T-minus schedules.","V"],
+  ["Beverage pairing logic","Acid loves fat, sweet needs sweeter, bubbles fix fried. Wine, tea, or zero-proof — same grammar.","T"],
+ ],
+ q:[
+  ["The 10-dish canon","Ten classics from one of your cuisines, cooked properly, from that cuisine's own respected authors. One rep = one cuisine completed — all three to master.","T",3],
+  ["Paste from scratch","A laksa, rendang, or green curry paste by mortar and pestle, tasted against the tub version.","T",2],
+  ["Dumpling day","Fifty folded in a session; filling seasoned by test-frying a spoonful first.","P",2],
+  ["Recreate from taste","Eat a dish, no recipe, rebuild it within a week from palate memory alone. The palate exam disguised as dinner.","T",1],
+  ["Host, three times","Dinner parties for 6–8: written menu, written timeline, and you actually sit down and eat with them.","V",3],
+ ],
+ boss:["The four-course themed dinner","One of your three cuisines, four courses, 6–8 guests, executed solo and on schedule — no recipes open mid-service. The exam isn't any dish; it's the evening."],
+ books:"Per cuisine, the bible: Dunlop (<i>The Food of Sichuan</i>), Roden (Middle East), Sakai (<i>Japanese Home Cooking</i>), Presilla (Latin America) — whichever match your three."
+},
+{
+ name:"Pastry & Precision", sub:"The technical tier", band:[73,80],
+ intro:"The gap between great home cook and professional is control: temperature to the degree, texture on purpose, plates designed rather than assembled. Pastry's precision and the modern kitchen's instruments, together.",
+ s:[
+  ["The custard ladder","Crème anglaise, pastry cream, crème caramel, brûlée: tempering eggs without scrambling, setting without rubber.","B"],
+  ["Chocolate temper","Melt, seed, work to snap and shine — thermometer verified, bloom-free.","B"],
+  ["Ice creams & sorbets","Custard base, sugar's role in scoopability, churn discipline.","B"],
+  ["Lamination","Croissant dough: butter block, turns, temperature warfare. The most demanding dough in the canon.","B"],
+  ["Plated desserts","Sauce, crunch, cream, frozen, fresh acid — five elements, one composition.","B"],
+  ["Consommé: the raft","Egg-white clarification pulling a stock crystal clear. Escoffier's spirit lives here.","S"],
+  ["Demi-glace & jus","Bones roasted twice, days of reduction, a sauce that coats and shines. Restaurant flavor's actual secret.","S"],
+  ["Sous vide, honestly","Validated time/temp, proper finishing — and a clear list of where it's worse (skin, crusts, most vegetables).","H"],
+  ["Modern textures, taste-first","Purées, one gel, one foam (xanthan, agar) — used only where they beat the classical answer.","H"],
+  ["Plating theory","Focal point, negative space, height, sauce placement. Steal grammar from plates you admire, not dishes.","V"],
+  ["The R&D notebook","Every experiment in grams, one variable at a time, with outcomes and next steps. Development is iteration with receipts.","T"],
+ ],
+ q:[
+  ["Croissants to honeycomb","Bake until the cross-section shows open honeycomb. Usually 3–5 attempts; log each.","B",3],
+  ["Consommé, read-a-spoon clear","If you can read through it, pass.","S",2],
+  ["The demi weekend","Proper jus or demi over two days; frozen in cubes, rationed like treasure.","S",1],
+  ["Triangle test yourself","Same cut sous vide vs traditional, plated blind for a friend. Learn what precision buys and what it doesn't.","T",2],
+  ["A plated dessert","All five elements, composed, photographed, critiqued in the notebook.","B",2],
+  ["One dish, five plates","Same dish plated five ways; pick the winner and argue why in writing.","V",1],
+ ],
+ boss:["The Michelin cookbook dish","One full dish from <i>The French Laundry Cookbook</i> or <i>Eleven Madison Park</i>, every sub-recipe, no shortcuts. Expect two days. The point is feeling exactly how much work lives under a three-star plate."],
+ books:"Keller, <i>The French Laundry Cookbook</i>; <i>Modernist Cuisine at Home</i>; Hamelman, <i>Bread</i> for the lamination chapters."
+},
+{
+ name:"The Line", sub:"Speed, consistency, strangers", band:[81,90],
+ intro:"Everything so far was cooking. This tier is service: fast, identical, for people with no reason to be kind, on a clock. The pro-track door also opens here — it's the only route to where stars actually live.",
+ s:[
+  ["Process cards","Every signature dish as a card: times, temps, yields, critical points, plating map. If another cook can't follow it, it isn't done.","V"],
+  ["Prep systems","Batch prep, deli containers, label-and-date, FIFO. Run your fridge like a walk-in.","V"],
+  ["Hold and reheat without death","What survives the window, what dies in it, and how to fire so nothing waits.","V"],
+  ["Allergen redesign","Rebuild a dish for gluten/dairy/nut-free without serving an apology. Guests with allergies eat the same standard.","V"],
+  ["Costing, honestly","Cost per plate including trim loss and waste. Food-cost percentage is the invisible skill under every great restaurant.","V"],
+  ["Palate calibration","Blind-taste salts, oils, vinegars, soys quarterly. Season by hand-feel, confirm by scale. Your palate is an instrument; tune it.","T"],
+  ["Feedback from strangers","Friends lie. Cook for people with no stake in your feelings and interview them properly.","V"],
+ ],
+ q:[
+  ["The 90-minute service","Three courses for four, kitchen spotless at plate-drop, in 90 minutes. Repeat until it feels calm.","V",3],
+  ["Ten identical plates","Your signature dish across a month, photo log. Pass: a stranger can't rank them.","V",3],
+  ["Blind ladder","8/10 correct in a blind lineup of oils or vinegars you stocked.","T",2],
+  ["Cost a full menu","One dinner-party menu costed per plate, waste included, written like you'd hand it to an investor.","V",1],
+  ["The pop-up, twice","A supper club with paying strangers — then run it AGAIN with revisions, and prove the second service was better. Money changes feedback; iteration proves you heard it.","V",2],
+ ],
+ boss:["Six-course tasting for eight","Printed menus, planned pairings, courses fired on a written schedule you actually keep. One commis (friend) allowed. Guests never feel the kitchen sweat."],
+ books:"Bourdain, <i>Kitchen Confidential</i> (the culture); Meyer, <i>Setting the Table</i> (hospitality &gt; service); Charnas, <i>Work Clean</i>."
+},
+{
+ name:"Star-Readiness", sub:"The three-star standard", band:[91,99],
+ intro:"Michelin's five criteria, pursued deliberately: quality of product, mastery of technique, harmony of flavor, personality in the cuisine, consistency over time. The last nine levels are the longest — in the game and in the kitchen.",
+ s:[
+  ["Write your cuisine's thesis","One paragraph: what you cook, why, what you refuse to serve. Every three-star kitchen can state it. Now you can too.","T"],
+  ["Seasonality as the engine","Menus written from what's at peak, not from cravings. Build supplier relationships — the farmers' market counts.","V"],
+  ["The R&D loop, formalized","Idea → sketch → test → taste → refine → document → keep or kill. Weekly. Innovation is a schedule, not a mood.","T"],
+  ["Teach someone Tiers 1–3","Take a real beginner through the foundations. Nothing exposes your gaps like teaching them.","V"],
+  ["Hospitality choreography","The welcome, the pacing, the goodbye. Three stars are won in the dining room as much as the kitchen.","V"],
+  ["The five-criteria audit","Twice a year, grade your own cooking against Michelin's five, in writing, harshly — with at least one external palate scoring alongside.","T"],
+ ],
+ q:[
+  ["Reverse-engineer the stars","Eat at starred restaurants; deconstruct three dishes in the notebook and rebuild each at home within a month of tasting it.","T",3],
+  ["The signature dish","One fully original dish through 10+ documented iterations until you'd put your name on it permanently.","T",1],
+  ["The mentor's graduation","Your student cooks YOU a Tier 3 boss dinner. Their omelet is your exam.","V",1],
+  ["The seasonal rewrite","Design a full tasting menu; next season, throw it away and write a new one at the same standard. Consistency = excellence that survives change.","V",2],
+  ["Externally judged","A full menu assessed by qualified outside palates (chefs, serious cooks, paying strangers) against the five criteria — not friends, not family.","T",2],
+ ],
+ boss:["The Grand Feast — your 99","An 8–10 course original tasting menu for ten guests: your thesis on plates, pairings, written service plan, everything from scratch to the bread and butter. Then — this is the actual level 99 — repeat it within the season at equal or better quality, judged on the rubric by someone outside your kitchen. Anyone can peak once. The cape is for twice."],
+ books:"Keller (all of it); <i>Alinea</i>; <i>Eleven Madison Park</i>; and your own R&D notebooks — by now the book that matters most."
+},
+{
+ name:"The Brigade", sub:"Commis to chef de partie", band:[100,107], elite:true,
+ intro:"Past 99 the game leaves your kitchen — these levels are earned in someone else's. A stage, then a station: speed, retention, composure, and the discovery that a Friday service teaches things no home dinner can. Even unpaid, even a good local bistro. The XP is real now.",
+ s:[
+  ["Land the stage","Write to kitchens you respect; take the best trail that will teach you. Show up early, bring your own knife, write everything down.","V"],
+  ["Brigade literacy","Roles, call-backs ('oui chef', 'behind', 'corner'), the pass, the window. Communication is a technique like any other.","V"],
+  ["Station setup and breakdown","To the house standard, not yours. Their labels, their containers, their map.","V"],
+  ["Prep at volume","Accurate quantities from a prep list, low waste, everything labeled and dated. Ten liters of stock behaves differently than one.","V"],
+  ["Quality under tickets","Hold your standard while orders stack, priorities shift, and someone is yelling about table twelve.","V"],
+  ["Knife at service pace","Everything from Tier 2, at double speed, without losing the dimensions. Speed is accuracy repeated.","K"],
+ ],
+ q:[
+  ["The stage week","A formal trail or stage, minimum one week. Afterwards, write up what broke first: speed, palate, or composure — that's your next six weeks of practice.","V",1],
+  ["Fifty counted services","Commis, prep, apprenticeship, or recurring volunteer line work — fifty real services with tickets and a chef who corrects you. Ask for a formal skills assessment at 50.","V",1],
+  ["Rotate the kitchen","Work or stage on pastry and at least two savory stations. Breadth before ownership.","V",2],
+  ["Plate to spec, all night","The same dish to weight, temperature, and visual standard across an entire service — the chef's spec, not your interpretation.","V",2],
+ ],
+ boss:["Run a station without rescue","One full service on your own station: prep done, pickups on time, nothing sent back, no one bailing you out on routine tasks. The kitchen's sign-off is the grade."],
+ books:"Bill Buford, <i>Heat</i> (what a stage actually feels like); your chef's corrections, written down nightly."
+},
+{
+ name:"Sous Chef", sub:"The kitchen runs through you", band:[108,114], elite:true,
+ intro:"Ownership scales from a station to the room: prep plans, ordering, expediting, teaching. The skill being trained is no longer cooking — it's keeping twenty moving parts at standard while coaching the hands that touch them.",
+ s:[
+  ["Whole-kitchen prep plans","Write the day for every station and allocate labor realistically. The plan is a dish; season it.","V"],
+  ["Expedite","Run the pass: pacing, checking every plate, protecting the guest from the kitchen's bad night.","V"],
+  ["Ordering and inventory","Order, receive, reject, store, and count to specification. The walk-in is a ledger you can eat.","V"],
+  ["Train and document","Turn your station knowledge into recipes with yields, critical points, and holding limits — then train a cook to reproduce it without you.","V"],
+  ["P&L literacy","Labor cost, food cost, gross profit, and the price of mistakes. Excellence that loses money closes.","V"],
+  ["Crisis handling","Call-outs, equipment death, late deliveries, allergy tickets mid-rush. Composure is a system, not a mood.","V"],
+ ],
+ q:[
+  ["Two hundred services","Cumulative, logged. Consistency is a number before it's a reputation.","V",1],
+  ["Ten consecutive services, one station","Own it completely — including one genuinely bad night. Anyone can run a quiet Tuesday; the bad night is the exam.","V",1],
+  ["Graduate a cook","Train another cook to full sign-off on your station. Teaching is the proof of mastery — same rule as Tier 12, higher stakes.","V",1],
+  ["Run the pass","Expedite full services: every plate checked, tables landing together, kitchen never feeling the weeds.","V",2],
+ ],
+ boss:["The week","Run the kitchen for a complete week — standards, morale, food safety, ordering, and costs all held — while the chef watches from a distance and touches nothing."],
+ books:"Meyer, <i>Setting the Table</i> (reread it — it reads differently now); Charnas, <i>Work Clean</i>; the house P&L, monthly."
+},
+{
+ name:"The Restaurant", sub:"Worth a special journey", band:[115,120], elite:true,
+ intro:"Michelin's own ladder: one star is cooking worth a stop, two worth a detour, three worth a special journey. This tier is the campaign — a kitchen you lead, a menu that is unmistakably yours, and the only boss in the game that takes 150 services to fight.",
+ s:[
+  ["Define the restaurant","Point of view, room, economics — one document. What you cook, for whom, at what price, and why it survives.","T"],
+  ["The supplier network","Written product specifications and the relationships that fill them. Ingredient quality is criterion one; it's bought before it's cooked.","V"],
+  ["The development pipeline","Brief → test → tasting → costing → service trial. Every menu change flows through it; nothing lands on guests untested.","T"],
+  ["Develop your sous chefs","Leaders who defend the standard in your absence. Criterion five — consistency — is a staffing question wearing a plating tweezers.","V"],
+  ["The guest arc","Welcome to goodbye, the whole visit choreographed. Three stars are famously decided in the dining room as much as the kitchen.","V"],
+  ["Sustain it humanely","Schedules, wages, turnover, culture. Excellence that burns its people down cannot hold criterion five; the guide notices, and so does everyone else.","V"],
+ ],
+ q:[
+  ["The repetition run","A menu you designed, held at standard across 20 services — the last five at least as good as the first five, despite staff, product, and cover changes, judged by someone who eats anonymously.","V",1],
+  ["Three anonymous assessments","Independent full-menu evaluations against the five criteria, from palates qualified to compare elite restaurants. Not friends. Not regulars.","T",3],
+  ["Survive the season change","Rewrite the menu for a new season and hold the same standard through the transition — consistency across change, the hardest version of criterion five.","V",2],
+  ["Pay it down the ladder","Take a commis from arrival to station ownership. The brigade that trained you is the brigade you now build.","V",1],
+ ],
+ boss:["The special journey","Lead a complete seasonal menu through 150 services, audited against ingredient quality, harmony, technique, personality, and consistency — with anonymous expert assessments across the run. Level 120 means the evidence supports three stars. Only the Guide can award them; the master cape means you no longer need them to know."],
+ books:"Escoffier to Adrià to Redzepi — read the three-star canon as records of thinking, not recipes; and your own restaurant's numbers, nightly."
+}
+];
+
+// ---------- OSRS XP curve ----------
+function xpForLevel(L){let p=0;for(let n=1;n<L;n++)p+=Math.floor(n+300*Math.pow(2,n/7));return Math.floor(p/4);}
+const MAXLVL=120;
+const XP=[...Array(MAXLVL+1)].map((_,i)=>i<1?0:xpForLevel(i));
+function levelFromXp(x){let l=1;for(let i=2;i<=MAXLVL;i++){if(x>=XP[i]-0.5)l=i;else break;}return l;}
+const fmt=n=>Math.round(n).toLocaleString("en-US");
+
+// ---------- item registry & XP allocation ----------
+const W={s:1,q:3,b:6};
+let ITEMS=[]; // {id,ti,type,disc,reps,xp}  xp = TOTAL for item (split across reps)
+TIERS.forEach((t,ti)=>{
+  const prevEnd=ti===0?1:TIERS[ti-1].band[1];
+  const tierXp=XP[t.band[1]]-XP[prevEnd];
+  const totalW=t.s.length*W.s+t.q.length*W.q+W.b;
+  const unit=tierXp/totalW;
+  t.s.forEach((it,i)=>ITEMS.push({id:`t${ti}s${i}`,ti,type:"s",disc:it[2],reps:1,xp:unit*W.s}));
+  t.q.forEach((it,i)=>ITEMS.push({id:`t${ti}q${i}`,ti,type:"q",disc:it[2],reps:it[3]||1,xp:unit*W.q}));
+  ITEMS.push({id:`t${ti}b`,ti,type:"b",disc:"V",reps:1,xp:unit*W.b});
+});
+const BY_ID=Object.fromEntries(ITEMS.map(o=>[o.id,o]));
+const DISC_MAX={};ITEMS.forEach(o=>{DISC_MAX[o.disc]=(DISC_MAX[o.disc]||0)+o.xp;});
+
+// ---------- state ---------- store: {id: repCount}
+let store={};
+try{store=JSON.parse(localStorage.getItem("cooking99v3")||"{}");}catch(e){store={};}
+function save(){try{localStorage.setItem("cooking99v3",JSON.stringify(store));}catch(e){}}
+const repsOf=id=>store[id]||0;
+const isDone=o=>repsOf(o.id)>=o.reps;
+const itemXpEarned=o=>o.xp*(Math.min(repsOf(o.id),o.reps)/o.reps);
+
+// ---------- render ----------
+const CHECK='<svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 4.5" stroke="#17120d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function pipsHTML(o){
+  if(o.reps<2)return"";
+  let h='<span class="pips" aria-hidden="true">';
+  for(let i=0;i<o.reps;i++)h+=`<span class="pip${i<repsOf(o.id)?" on":""}"></span>`;
+  return h+"</span>";
+}
+function itemHTML(o,title,detail,kind){
+  const done=isDone(o),part=!done&&repsOf(o.id)>0;
+  const tag=kind==="boss"?'<span class="bosstag">Boss fight</span><br>':"";
+  const chip=`<span class="dchip">${DISC[o.disc]}</span>`;
+  const xpLine=`<span class="xp mono">+${fmt(o.xp)} xp</span>`;
+  const repLine=o.reps>1?`<span class="xp mono">${Math.min(repsOf(o.id),o.reps)}/${o.reps} reps</span>`:"";
+  return `<div class="item${done?" checked":""}${part?" partial":""}" data-id="${o.id}" role="checkbox" aria-checked="${done}" tabindex="0">
+    <div class="box">${CHECK}</div>
+    <div class="txt">${tag}<b style="font-weight:600">${title}</b>${chip}<small>${detail}</small>${pipsHTML(o)}</div>
+    <div class="meta">${xpLine}${repLine}</div>
+  </div>`;
+}
+const main=document.getElementById("tiers");
+main.innerHTML=TIERS.map((t,ti)=>{
+  const skills=t.s.map((it,i)=>itemHTML(BY_ID[`t${ti}s${i}`],it[0],it[1],"s")).join("");
+  const quests=t.q.map((it,i)=>itemHTML(BY_ID[`t${ti}q${i}`],it[0],it[1],"q")).join("");
+  const boss=itemHTML(BY_ID[`t${ti}b`],t.boss[0],t.boss[1],"boss");
+  return `<section class="tier${t.elite?" elite":""}" id="tier${ti}">
+    <div class="band"><div><div class="range mono">${t.band[0]}–${t.band[1]}</div><div class="rangecap">level</div></div><div class="rail"></div></div>
+    <div class="tier-body">
+      <div class="tier-head">
+        <div><div class="tier-sub">${t.elite?"Elite tier":"Tier"} ${ti+1}</div><h2 class="tier-name">${t.name}</h2></div>
+        <div class="tier-progress mono" id="prog${ti}"></div>
+      </div>
+      <p class="tier-intro">${t.intro}</p>
+      <div class="grp"><div class="grp-label">Skill unlocks</div>${skills}</div>
+      <div class="grp"><div class="grp-label">Quests</div>${quests}</div>
+      <div class="grp boss"><div class="grp-label">Tier boss</div>${boss}</div>
+      <div class="library"><b>Library</b>${t.books}</div>
+    </div>
+  </section>`;
+}).join("");
+
+// stats grid
+const statsGrid=document.getElementById("statsGrid");
+statsGrid.innerHTML=Object.keys(DISC).map(d=>
+  `<div class="stat" id="stat${d}"><span class="sname">${DISC[d]}</span><span class="slvl mono"><span id="statLvl${d}">1</span><small>/99</small></span></div>`
+).join("");
+
+// ---------- HUD ----------
+const hudLvl=document.getElementById("hudLvl"),hudCap=document.getElementById("hudCap"),
+      badge=document.getElementById("badge"),xpFill=document.getElementById("xpFill"),
+      xpLine=document.getElementById("xpLine"),toast=document.getElementById("toast");
+let toastTimer=null,lastLevel=null;
+function totalXp(){return ITEMS.reduce((a,o)=>a+itemXpEarned(o),0);}
+function refresh(announce){
+  const x=totalXp(),lvl=levelFromXp(x);
+  hudLvl.textContent=lvl;
+  badge.classList.toggle("capeT",lvl>=MAXLVL);
+  hudCap.textContent=lvl>=MAXLVL?"Master":lvl>=99?"Skillcape":"Cooking";
+  if(lvl>=MAXLVL){
+    xpFill.style.width="100%";
+    xpLine.innerHTML=`<b>${fmt(x)} xp</b> — Level 120. Master cape. There is nothing left to teach you here. 🏆`;
+  }else{
+    const lo=XP[lvl],hi=XP[lvl+1];
+    xpFill.style.width=((x-lo)/(hi-lo)*100).toFixed(1)+"%";
+    const capeNote=lvl>=99?" · skillcape earned — the true cap is 120":"";
+    xpLine.innerHTML=`Level <b>${lvl}</b> · <b>${fmt(x)}</b> xp · ${fmt(hi-x)} to level ${lvl+1}${capeNote}`;
+  }
+  // discipline stats
+  Object.keys(DISC).forEach(d=>{
+    const earned=ITEMS.filter(o=>o.disc===d).reduce((a,o)=>a+itemXpEarned(o),0);
+    const frac=DISC_MAX[d]?earned/DISC_MAX[d]:0;
+    const dl=levelFromXp(frac*XP[99]);
+    document.getElementById(`statLvl${d}`).textContent=dl;
+    document.getElementById(`stat${d}`).classList.toggle("maxed",dl>=99);
+  });
+  // tier progress
+  TIERS.forEach((t,ti)=>{
+    const ids=ITEMS.filter(o=>o.ti===ti),done=ids.filter(isDone).length;
+    document.getElementById(`prog${ti}`).textContent=`${done}/${ids.length}`;
+    document.getElementById(`tier${ti}`).classList.toggle("done",done===ids.length);
+  });
+  if(announce&&lastLevel!==null&&lvl>lastLevel){
+    toast.textContent=
+      lvl>=MAXLVL?"Level 120. Master cape. Stars are awarded to restaurants — but this kitchen no longer needs them to know.":
+      (lvl>=99&&lastLevel<99)?"Congratulations — Level 99 Cooking. Wear the cape. (The true cap is 120, and you know it.)":
+      `Congratulations, you just advanced ${lvl-lastLevel>1?lvl-lastLevel+" Cooking levels":"a Cooking level"}! You are now level ${lvl}.`;
+    toast.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove("show"),4200);
+  }
+  lastLevel=lvl;
+}
+function rerenderItem(el,o){
+  const done=isDone(o),part=!done&&repsOf(o.id)>0;
+  el.classList.toggle("checked",done);el.classList.toggle("partial",part);
+  el.setAttribute("aria-checked",done);
+  const pips=el.querySelectorAll(".pip");
+  pips.forEach((p,i)=>p.classList.toggle("on",i<repsOf(o.id)));
+  const rl=el.querySelector(".meta .xp:last-child");
+  if(o.reps>1&&rl)rl.textContent=`${Math.min(repsOf(o.id),o.reps)}/${o.reps} reps`;
+}
+function toggle(el){
+  const o=BY_ID[el.dataset.id];if(!o)return;
+  const r=repsOf(o.id);
+  store[o.id]=r>=o.reps?0:r+1;
+  if(!store[o.id])delete store[o.id];
+  rerenderItem(el,o);save();refresh(true);
+}
+main.addEventListener("click",e=>{const it=e.target.closest(".item");if(it)toggle(it);});
+main.addEventListener("keydown",e=>{
+  if((e.key===" "||e.key==="Enter")&&e.target.classList.contains("item")){e.preventDefault();toggle(e.target);}
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(confirm("Reset all progress? Reps, levels, and cape status will be cleared.")){
+    store={};save();lastLevel=null;lastTrim=null;
+    document.querySelectorAll(".item").forEach(el=>{const o=BY_ID[el.dataset.id];if(o)rerenderItem(el,o);});
+    refresh(false);
+  }
+});
+refresh(false);
+</script>
