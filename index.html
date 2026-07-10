@@ -286,7 +286,7 @@
   <main id="tiers"></main>
 
   <footer>
-    <p><b>Version 4 merge notes.</b> Backbone and XP engine from the Fable curriculum; exam design (blind stock identification, surprise-basket sauces, the 45-minute egg exam, the family-table boss, rep-based mastery, the 0–4 rubric, the counted-services ladder that now powers the elite tiers) from the Codex "Cooking Skillcape"; vegetable &amp; starch craft tier and flavor-engine gates from the Grok skill tree. Sequencing cross-checked against Le Cordon Bleu Basic→Superior, the CIA Professional Chef progression, and Michelin's published five criteria. Levels 100–120 use the same XP formula continued past the cape — the master cape costs exactly what RuneScape says it should.</p>
+    <p><b>Version 4 merge notes.</b> Backbone and XP engine from the Fable curriculum; exam design (blind stock identification, surprise-basket sauces, the 45-minute egg exam, the family-table boss, rep-based mastery, the 0–4 rubric, the counted-services ladder that now powers the elite tiers) from the Codex "Cooking Skillcape"; vegetable &amp; starch craft tier and flavor-engine gates from the Grok skill tree. Sequencing cross-checked against Le Cordon Bleu Basic→Superior, the CIA Professional Chef progression, ICE's Career Culinary Arts sequence (2024 New York catalog — source of the game-cookery, primal-literacy, and market-basket additions), and Michelin's published five criteria. Levels 100–120 use the same XP formula continued past the cape — the master cape costs exactly what RuneScape says it should.</p>
     <p>Flavor-lab quests use the Epicure pairing model (epicure-mcp.kaikaku.ai): seed an ingredient, cook from its bridge pairings. Progress is stored only in this browser. The pass conditions are the real examiner.</p>
   </footer>
 </div>
@@ -459,6 +459,7 @@ const TIERS=[
   ["Whole chicken: 8-cut + spatchcock","Follow the joints, keep the oysters, save every bone. At speed it becomes moving meditation.","M"],
   ["Fish filleting, round and flat","Snapper and flounder; sharp flexible knife, confident strokes, bones to fumet.","M"],
   ["Shellfish literacy","Clean and cook shrimp, mussels, squid, one whole crustacean. Freshness judgment is non-negotiable: eyes, gills, smell, shell.","M"],
+  ["Primal literacy","Beef, pork, lamb, veal: know the major primals, which method each wants (loin sears, shoulder braises, shank stews), and how to trim and portion two large cuts with a yield calculation.","M"],
   ["Dry brining","Salt ahead: overnight for chicken, days for big roasts. The single biggest protein upgrade that exists.","M"],
   ["Curing 101","Gravlax (salt + sugar + 48 hours) and a basic bacon. Preservation as flavor, safety by procedure.","M"],
   ["Terrines & forcemeat intro","A rustic pâté or rillettes; grind, season, test-fry a spoonful before committing the batch.","M"],
@@ -471,6 +472,7 @@ const TIERS=[
   ["Gravlax, served to a skeptic","48-hour cure, sliced paper-thin on the bias.","M",2],
   ["Whole fish, roasted and carved","Bought whole, judged fresh, roasted, portioned tableside without carnage.","M",2],
   ["The offal dinner","Liver plus one more organ, cooked well enough that someone asks for seconds before asking what it is.","M",2],
+  ["Game night","Rabbit, quail, or venison — lean, unforgiving, and nothing like chicken. Culinary schools teach game because it punishes autopilot cooking.","M",2],
   ["Cold-course night","A composed cold appetizer spread, fully prepped ahead, zero à-la-minute panic.","V",1],
  ],
  boss:["One duck, three plates","Break down a whole duck: seared breast, confit legs, jus from the carcass. One animal, three techniques, nothing wasted — the tier's philosophy on a single menu."],
@@ -478,11 +480,14 @@ const TIERS=[
 },
 {
  name:"World Systems & The Table", sub:"Three cuisines deep, rooms full of people", band:[65,72],
- intro:"Depth over tourism: three cuisines learned past the recipe level — pantry, grammar, canon — plus the separate skill of feeding rooms: menus, timelines, scaling. Every cuisine is someone's grandmother; study accordingly.",
+ intro:"Depth over tourism: three cuisines learned past the recipe level — pantry, grammar, canon — plus the separate skill of feeding rooms: menus, timelines, scaling. The Asian module is mandatory: wok, rice, and steam are heat techniques the French canon simply doesn't teach. Every cuisine is someone's grandmother; study accordingly.",
  s:[
-  ["Choose your three","One from home, one you love, one that scares you. Build each pantry completely — no substituting the fish sauce.","T"],
+  ["Choose your three","One from home, one you love, one that scares you — at least one East or Southeast Asian (Chinese, Japanese, Thai, Malaysian…). Build each pantry completely: light and dark soy, oyster sauce, Shaoxing wine, fermented beans, dried shrimp — no substituting the fish sauce.","T"],
+  ["The wok","Wok hei, velveting proteins, the stir-fry order (aromatics → protein → vegetables → sauce), small batches on your hottest burner. The wok is a heat philosophy, not a pan shape.","H"],
+  ["Rice as a discipline","Jasmine washed and steamed, short-grain seasoned for sushi, congee from broken rice, fried rice that demands day-old grains. Half the world grades a cook on rice alone.","P"],
+  ["Steam as precision","Whole fish, dumplings, egg custard (chawanmushi/zheng shui dan) — steam is the gentlest heat you own and Chinese kitchens made it an art form.","H"],
   ["Spice work","Toast, bloom in fat (tadka), grind fresh, build pastes by pestle. Jarred ground coriander is a different ingredient than what you just made.","T"],
-  ["The flavor engine","State each cuisine's engine in one sentence (e.g. 'Thai: fish-sauce salt + lime acid + palm sugar + chili heat, balanced per bite'). If you can't, you're collecting recipes, not learning systems.","T"],
+  ["The flavor engine","State each cuisine's engine in one sentence (e.g. 'Cantonese: freshness first, seasoning to reveal not mask — soy, ginger, scallion, heat'; 'Thai: fish-sauce salt + lime acid + palm sugar + chili heat, balanced per bite'). If you can't, you're collecting recipes, not learning systems.","T"],
   ["Dumplings & noodles","One wrapper folded properly (jiaozi, wonton, or tortellini) and one noodle discipline.","P"],
   ["Menu composition","Progression, contrast, seasonality; rich follows acid; texture is a course-planning tool.","V"],
   ["Scaling & the timeline","Cooking for 10 is not 2.5× cooking for 4. Prep-ahead architecture, oven Tetris, written T-minus schedules.","V"],
@@ -490,13 +495,15 @@ const TIERS=[
  ],
  q:[
   ["The 10-dish canon","Ten classics from one of your cuisines, cooked properly, from that cuisine's own respected authors. One rep = one cuisine completed — all three to master.","T",3],
+  ["The Cantonese fish exam","Whole fish steamed with ginger and scallion, hot-oil pour, seasoned soy — served the moment it's done. The freshness-and-timing exam of Chinese cooking: nothing to hide behind.","M",2],
+  ["Wok hei night","A three-dish stir-fry dinner fired back-to-back from one wok — a green, a protein, a noodle or rice — each with real breath-of-the-wok char, none steamed limp.","H",2],
   ["Paste from scratch","A laksa, rendang, or green curry paste by mortar and pestle, tasted against the tub version.","T",2],
   ["Dumpling day","Fifty folded in a session; filling seasoned by test-frying a spoonful first.","P",2],
   ["Recreate from taste","Eat a dish, no recipe, rebuild it within a week from palate memory alone. The palate exam disguised as dinner.","T",1],
   ["Host, three times","Dinner parties for 6–8: written menu, written timeline, and you actually sit down and eat with them.","V",3],
  ],
  boss:["The four-course themed dinner","One of your three cuisines, four courses, 6–8 guests, executed solo and on schedule — no recipes open mid-service. The exam isn't any dish; it's the evening."],
- books:"Per cuisine, the bible: Dunlop (<i>The Food of Sichuan</i>), Roden (Middle East), Sakai (<i>Japanese Home Cooking</i>), Presilla (Latin America) — whichever match your three."
+ books:"Per cuisine, the bible: Dunlop (<i>The Food of Sichuan</i>), Kho (<i>Phoenix Claws and Jade Trees</i> — Chinese technique), <i>The Woks of Life</i>, Roden (Middle East), Sakai (<i>Japanese Home Cooking</i>), Presilla (Latin America) — whichever match your three."
 },
 {
  name:"Pastry & Precision", sub:"The technical tier", band:[73,80],
@@ -561,6 +568,7 @@ const TIERS=[
  q:[
   ["Reverse-engineer the stars","Eat at starred restaurants; deconstruct three dishes in the notebook and rebuild each at home within a month of tasting it.","T",3],
   ["The signature dish","One fully original dish through 10+ documented iterations until you'd put your name on it permanently.","T",1],
+  ["The market basket","An unseen basket of seasonal ingredients, chosen by someone else. Design and cook a complete menu from it, solo, same day, no recipes — culinary school's classic final, and the purest test that technique became instinct.","T",2],
   ["The mentor's graduation","Your student cooks YOU a Tier 3 boss dinner. Their omelet is your exam.","V",1],
   ["The seasonal rewrite","Design a full tasting menu; next season, throw it away and write a new one at the same standard. Consistency = excellence that survives change.","V",2],
   ["Externally judged","A full menu assessed by qualified outside palates (chefs, serious cooks, paying strangers) against the five criteria — not friends, not family.","T",2],
